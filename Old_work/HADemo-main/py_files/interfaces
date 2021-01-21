@@ -1,0 +1,11 @@
+# Etherne adapter 0
+auto eth0
+allow-hotplug eth0
+#no-auto-down eth0
+iface eth0 inet static
+address 192.168.43.128
+netmask 255.255.255.0
+gateway 192.168.43.1
+dns-nameservers 192.168.43.1
+#dns-nameservers 1.1.1.1 1.0.0.1
+

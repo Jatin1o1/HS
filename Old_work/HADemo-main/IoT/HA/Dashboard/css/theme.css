@@ -1,0 +1,11 @@
+/* Contains CSS for Neumorphism Theme */
+
+/* theme light & shadow */
+.theme-ls {
+  box-shadow: -6px -6px 14px rgba(255, 255, 255, 0.5), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.oned {
+  background-image: linear-gradient( 315deg, var(--bg-grad-c1) 40%, var(--bg-grad-c2));
+  box-shadow: inset -6px -6px 16px rgba(255, 255, 255, 0.5), inset -6px -6px 16px rgba(255, 255, 255, 0.5), inset 6px 6px 12px rgba(255, 255, 255, 0.075), inset 6px 6px 12px rgba(0, 0, 0, 0.15);
+}

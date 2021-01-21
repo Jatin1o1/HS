@@ -1,0 +1,11 @@
+.lb-item {
+  fill:#292727;
+}
+
+.appli-ico {
+  fill: rgb(44, 44, 44);
+}
+
+body > nav > ul > li.logo > a > svg > g > path.fa-primary {
+  opacity: 0.5;
+}

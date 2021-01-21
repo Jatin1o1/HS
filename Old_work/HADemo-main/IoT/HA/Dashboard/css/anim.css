@@ -1,0 +1,42 @@
+@keyframes sl-right {
+  0% {margin-left: 140px;}
+  25% {margin-left: 250px;}
+  /* 50% {margin-left: 250px;} */
+  75% {margin-left: 275px;}
+  100% {margin-left: 300px;}
+}
+
+@keyframes sl-left {
+  0% {margin-left: 300px;}
+  25% {margin-left: 260px;}
+  50% {margin-left: 220px;}
+  75% {margin-left: 180px;}
+  100% {margin-left: 140px;}
+}
+
+@keyframes nav-expand {
+  0% {width: 4em;}
+  33% {width: 8em;}
+  66% {width: 12em;}
+  100% {width: 16em;}
+}
+
+@keyframes text-appear {
+  0% {display: none;}
+	99% {display: none;}
+	100% {display: inline;}
+}
+
+@keyframes fan-animation {
+  0.0%{
+      transform: rotate(0deg);
+  }
+  100%{
+      transform: rotate(719deg);
+  }
+}
+
+/* Add the animation: property to whichever element you want to animate */
+#elementToAnimate{
+  animation: yourAnimation 1s linear 0s infinite normal none;
+}
