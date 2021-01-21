@@ -4,9 +4,10 @@ Home Security project
 authors:	Jatin Goyal(Jatin1o1)
 		Devendra Kaithal (bionic-brahma)
 	
+### installation:
+	run : package_installer.py , it will check and install all the packages reqired by the system at the current state of development
 
-
-### directory "INCLUDES"  
+#### directory "INCLUDES"  
 
 	contains:
 		chatbot.py : chatbot script
