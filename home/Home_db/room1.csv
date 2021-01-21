@@ -1,0 +1,8 @@
+node _no,name,pin_number,sensor_name,sensor_value
+1,led light,1,,
+2,fan,2,,
+1,switch,3,,
+1,night bulb,4,,
+1,Concealed 1,5,,
+1,Concealed 2,6,,
+1,Concealed 3,7,,
