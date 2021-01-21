@@ -1,0 +1,39 @@
+home automation
+
+features:
+	
+****** Home security  *********
+
+	- Facial recognition, 
+	- Intruder detection, family member detection, 
+	- Auto-Locking of doors 
+	- remote access
+	- 24 hours in house surveillance  usig Artificial Intelligence
+
+	- Remote video monitoring 
+	- Parental controls
+
+
+**** Assistive features **********
+	
+	- Lights controlling
+	- intelligent CHATBOT with speech recogniton and speech output
+	- Air qualiy monitoring
+	- Temperature and humidity monitoring
+	- Motion Detection
+	- Total power detection
+	- GAS leak detection
+	- Built-in Media Player
+
+****** ADD ons **********
+	- remote door access
+	- keyless door acess to home
+	- touchscreen Human interface 
+	- Alexa compatible 
+	- SIRI compatible
+	- cortana compatible
+	- Google Assistance compatible
+	
+		
+	
+	
