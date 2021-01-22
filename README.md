@@ -1,8 +1,9 @@
 # HS
 Home Security project 
 
-authors:	Jatin Goyal(Jatin1o1)
-		Devendra Kaithal (bionic-brahma)
+Authors:
+	######Jatin Goyal(Jatin1o1)
+	######Devendra Kaithal (bionic-brahma)
 	
 ### installation:
 	run : 
