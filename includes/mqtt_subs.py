@@ -22,7 +22,7 @@ class MQ_subs:
         self.client.loop_forever() # Start networking daemon
         
     def on_connect(self,client, userdata, flags, rc):  # The callback for when the client connects to the broker
-        client.subscribe(self.topic)  # Subscribe to the topic “digitest/test1”, receive any messages published on it
+        client.subscribe(self.topic)  # Subscribe to the topic, receive any messages published on it
         print("subscriing to topic :",self.topic)
 
 
