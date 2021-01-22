@@ -24,7 +24,6 @@ class Publish:
     def publish(self,msg):
         topic_name.instance_topic_msg= msg
 
-
 class subscribe(object):
     
     def __init__(self, topic_name):

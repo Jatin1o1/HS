@@ -10,6 +10,7 @@ class Publisher:
 
         self.publisher_client = socket.socket()  # instantiate socket client
         self.publisher_client.connect((host, port)) # connect to server
+        self.publisher_client.send( ("publisher:" + str(self.topic)).encode()  )  # inform server that this is a publisher
 
     def publish(self,msg):       
         if len(msg) != 0:   # checks if input message is not zero 

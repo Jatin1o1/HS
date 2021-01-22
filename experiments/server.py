@@ -4,15 +4,20 @@ import socket               # Import socket module
 import threading
 import time
 
-port = 5005
-
-max_byte_to_receive=1024
-max_no_of_clients = 1000
+max_byte_to_receive=1024 
 
 def on_new_client(clientsocket,addr):
     print  ('Got connection from', addr )
-    while True:
+    intro_msg = clientsocket.recv(max_byte_to_receive)
+    details= intro_msg.decode().split(":")
 
+    if details[0] == "publisher":
+        # publisher client
+    if details[1] == "subscriber":
+        # subscriber client here
+
+
+    while True:
         msg="hi client your address is " + str(addr)
         time.sleep(1)
         print(msg)
@@ -25,24 +30,27 @@ def on_new_client(clientsocket,addr):
         
     clientsocket.close()
 
-s = socket.socket()         # Create a socket object
-host = socket.gethostname() # Get local machine name
-            # Reserve a port for your service.
+def socket_server(port = 5005, max_clients=1000, max_byte_to_receive=1024 ):
+
+    server = socket.socket()     # Create a socket object
+    host = socket.gethostname()  # Get local machine name
+
+    server.bind((host, port))    # Bind to the port 
+    server.listen(max_clients)    # starts listening to the incoming client connection
+
+    print ( 'Server started!')
+    print ('Waiting for clients...' )
 
 
+    while True:
+        
+        client, addr = server.accept()     # Establish connection with client.
+        t=threading.Thread(target=on_new_client, args=(client,addr,) )
+        t.start()
 
-s.bind((host, port))        # Bind to the port
-s.listen(max_no_of_clients)                 # Now wait for client connection.
+    server.close()
 
-print ( 'Server started!')
-print ('Waiting for clients...' )
 
-while True:
-   c, addr = s.accept()     # Establish connection with client.
-   t=threading.Thread(target=on_new_client, args=(c,addr,) )
-   t.start()
-   #thread.start_new_thread(on_new_client,(c,addr))
-   #Note it's (addr,) not (addr) because second parameter is a tuple
-   #Edit: (c,addr)
-   #that's how you pass arguments to functions when creating new threads using thread module.
-s.close()
+if __name__== "__main__":
+    socket_server()   # starting socket server
+ 

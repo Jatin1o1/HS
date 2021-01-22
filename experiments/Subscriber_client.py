@@ -13,6 +13,7 @@ class Subscriber:
 
         self.subscriber_client = socket.socket()  # instantiate socket client
         self.subscriber_client.connect((host, port))  # connect to server
+        self.subscriber_client.send("subscriber:" + str(self.topic) )  # inform server that this is a subscriber
 
     def subscribe(self):
         t=threading.Thread(target= self.receive) # running recieving function in thread to receive data from server
