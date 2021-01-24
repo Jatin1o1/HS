@@ -1,6 +1,8 @@
 ######################################################
 # Before running this create a directory structure or 
 # edit the base variable to point to newely created 'jump' directory
+# there should be two sub-directories in the 'jump' directory
+# 1) data 2) models     <---- mind the case, its sensitive. ;)
 # Please report all the bugs to jumplabs. the codes are 
 # written exclusively for jumplabs.
 ######################################################
