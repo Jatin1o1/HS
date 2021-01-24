@@ -11,6 +11,8 @@
 import os
 import random
 from glob import glob
+from statistics import mode
+
 import cv2
 import pandas as pd
 import joblib
@@ -23,15 +25,17 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.mixture import GaussianMixture
 import numpy as np
 
 cascPath = "/home/devendra/Desktop/haarcascade_frontalface_default.xml"
 base = "/home/devendra/Desktop/jump/"
 rtb = None
+device_IDs = 10
+training_img_size = 64
 
 
 def convert_real(ls):
-
     return [ls_ele.real for ls_ele in ls]
 
 
@@ -60,7 +64,6 @@ def covNcorr(Mat):
 
     # Making data as mean centralised
     for i in range(c):
-
         Mat[:, i] = (Mat[:, i] - np.mean(Mat[:, i]))
 
     # Finding the Std. Deviation of each column in vectorized operation
@@ -110,7 +113,6 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
     e, v = np.linalg.eig(CovMat)
 
     if isinstance(e[0], complex):
-
         e = np.array(convert_real(e))
         v = np.array([convert_real(v_ele) for v_ele in v])
 
@@ -135,35 +137,29 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
         IP_calc = eigen_temp_sum / sum_eigenvalues * 100
 
         if print_msg:
-
             print("Adding Component No.", i + 1)
 
         if i != 0:
-
             Transform_matrix = np.append(Transform_matrix, np.transpose(eigenvectors_sorted[i]))
 
         i = i + 1
 
         if print_msg:
-
             print("Information Retained = ", IP_calc)
 
         if PCA_vectors == 0:
 
             if IP <= IP_calc or IP_calc == 100:
-
                 flag = 0
 
         else:
 
             if i >= PCA_vectors or IP_calc == 100:
-
                 flag = 0
 
     Ready_Transform_basis = np.transpose(Transform_matrix.reshape(i, eigenvectors_sorted[0].shape[0])).copy()
 
     if print_msg:
-
         print("+++++++++++++++++++++++++++++++Transform_basis+++++++++++++++++++++++++")
         print(Ready_Transform_basis)
         print("Projected Data:")
@@ -172,7 +168,6 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
     projected_data = np.dot(Mat, Ready_Transform_basis)
 
     if print_msg:
-
         print(projected_data)
 
     # information retained
@@ -182,14 +177,12 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
 
 
 def path_corrector(path):
-
     path = path.replace(" ", "_")
 
     return path
 
 
 def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_family="NA"):
-
     id = name + "_" + gender + "_" + str(age) + "_" + relation_with_family + "_" + str(random.randint(1, 10000)) + str(
         random.randint(500, 50000))
     id = path_corrector(id)
@@ -199,7 +192,31 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
     data_file_handle = open(folder + "/data.jump", "a")
     data_file_handle.write("Data about the individual\n")
     faceCascade = cv2.CascadeClassifier(cascPath)
-    video_capture = cv2.VideoCapture(1)
+
+    for i in range(device_IDs):
+
+        video_capture = cv2.VideoCapture(i)
+
+        if video_capture.isOpened():
+
+            print("camera opened")
+
+            break
+
+        else:
+
+            print("Camera Device ID is not correct. [", i, "] Changing it...")
+
+    if video_capture.isOpened():
+
+        pass
+
+    else:
+
+        print("Failed to find the camera. Check the camera connections and try again.")
+
+        return
+
     count = 0
 
     while True:
@@ -215,7 +232,6 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
         )
 
         for (x, y, w, h) in faces:
-
             record = gray[y:y + h, x:x + w]
             cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 255, 100), 1)
             cv2.imwrite(folder + "/" + "img" + str(count) + ".jpg", record)
@@ -224,7 +240,6 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
         cv2.imshow('Video', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
-
             break
 
     video_capture.release()
@@ -234,7 +249,6 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
 
 
 def training_data_prep():
-
     _labels = list()
     _images = list()
     class_roots = glob(base + "data/" + "*/")
@@ -263,17 +277,15 @@ def training_data_prep():
                 address = records_access_handle.readline()
 
                 if address == "":
-
                     break
 
                 address = address.split("\n")[0]
                 print("Accessing image: ", address)
                 img = cv2.imread(address, 0)
-                img = cv2.resize(img, (64, 64))
+                img = cv2.resize(img, (training_img_size, training_img_size))
                 cv2.waitKey(20)
 
                 if len(img) != 0:
-
                     cv2.imshow("Training Sequence", img)
                     _labels.append(label_id)
                     label_dictionary[label_id] = _label
@@ -293,7 +305,6 @@ def training_data_prep():
 
 
 def prediction_from_stream():
-
     path = base + "models/" + "LBPH.YAML"
     faceCascade = cv2.CascadeClassifier(cascPath)
     model = cv2.face.createEigenFaceRecognizer()
@@ -312,7 +323,6 @@ def prediction_from_stream():
         )
 
         for (x, y, w, h) in faces:
-
             # try:
             record = img[y:y + h, x:x + w]
             img = cv2.resize(record, (256, 256))
@@ -329,8 +339,12 @@ def prediction_from_stream():
 
 
 def models_prep():
-
     imgs, labels, labels_dictionary = training_data_prep()
+
+    with open(base + "models/labels_dictionary.jump", 'wb') as fp:
+
+        pickle.dump(labels_dictionary, fp)
+
     print("Input imges: ", len(imgs))
     print("lebels of imges: ", len(labels))
 
@@ -449,27 +463,146 @@ def models_prep():
 
         print("GaussianNB training error reported: [x]error-->", e)
 
+    ##
+    ## GaussianMixture
+    ##
+    try:
 
-def prediction_by_master(img):
-    pass
+        clf = GaussianMixture()
+        clf.fit(X_train_pca, y_train)
+        y_pred = clf.predict(X_test_pca)
+        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+
+        joblib.dump(clf, base + "models/GaussianMixture.sav")
+
+    except Exception as e:
+
+        print("GaussianMixture training error reported: [x]error-->", e)
+
+
+def prediction_by_master():
+    # clf1 = MLPClassifier(hidden_layer_sizes=(1024,), batch_size=256, verbose=True, early_stopping=True)
+    # clf2 = SVC()
+    # clf3 = RandomForestClassifier()
+    # clf4 = GradientBoostingClassifier()
+    # clf5 = KNeighborsClassifier()
+    # clf6 = GaussianNB()
+    # clf7 = GaussianMixture()
+
+    clf1 = joblib.load(base + "models/MLPClassifier.sav")
+    clf2 = joblib.load(base + "models/SVClassfier.sav")
+    clf3 = joblib.load(base + "models/RandomForestClassifier.sav")
+    clf4 = joblib.load(base + "models/GradientBoostingClassifier.sav")
+    clf5 = joblib.load(base + "models/KNeighborsClassifier.sav")
+    clf6 = joblib.load(base + "models/GaussianNB.sav")
+    clf7 = joblib.load(base + "models/GaussianMixture.sav")
+
+    model_list = [clf1, clf2, clf3, clf4, clf5, clf6, clf7]
+
+    with open(base + "models/rtb.jump", 'rb') as file:
+
+        rtb = pickle.load(file)
+
+    with open(base + "models/labels_dictionary.jump", 'rb') as file:
+
+        labels_dictionary = pickle.load(file)
+
+    # getting stream source
+    cam = None
+    
+    for i in range(device_IDs):
+
+        cam = cv2.VideoCapture(i)
+
+        if cam.isOpened():
+
+            print("camera opened")
+
+            break
+
+        else:
+
+            print("Camera Device ID is not correct. [", i, "] Changing it...")
+
+    if cam.isOpened():
+
+        pass
+
+    else:
+
+        print("Failed to find the camera. Check the camera connections and try again.")
+
+        return
+
+    faceCascade = cv2.CascadeClassifier(cascPath)
+
+    while True:
+
+        ret, frame = cam.read()
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        faces = faceCascade.detectMultiScale(
+            img,
+            scaleFactor=1.1,
+            minNeighbors=10,
+            minSize=(32, 32),
+        )
+
+        for (x, y, w, h) in faces:
+            
+            record = img[y:y + h, x:x + w]
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 255, 100), 1)
+            record = cv2.resize(record, (training_img_size, training_img_size))
+            record = np.array(record)
+            print(record.shape)
+            ###############################################################
+
+            #record = record.reshape((1, record.shape[0], record[1]))
+            record = np.resize(record, (1, record.shape[0]*record.shape[1]))
+            record = np.dot(record, rtb)
+            predictions_by_childs = list()
+            
+            for model, i in zip(model_list, range(len(model_list))):
+                
+                predicted_label = model.predict(record)
+                print("Model number -> ", i, "Predicted: label", predicted_label)
+                predictions_by_childs.append(predicted_label[0])
+                
+            try:
+                
+                predicted_label_final = labels_dictionary[mode(predictions_by_childs)]
+                print(predicted_label_final)
+                cv2.putText(frame, predicted_label_final, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 0, 255), 1,
+                                cv2.LINE_AA)
+                
+            except Exception as e:
+                
+                print(e)
+
+        cv2.imshow("Prediction Feed", frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            
+            break
 
 
 def data_reader(address):
+    
     pass
 
 
 #
- #
 #
- #     Testing block
 #
- #
+#     Testing block
+#
+#
 #
 
 if __name__ == "__main__":
 
-    res = 'n'
-
+    res = 'y'
+    res = input("Want to add people ? give 'y' for yes.")
     while res == 'y':
         name = input("Name of person: ")
         getNewClass(name)
@@ -484,6 +617,6 @@ if __name__ == "__main__":
 
     res3 = input("Want predictions? [y/n]: ")
     if res3 == 'y':
-        prediction_from_stream()
+        prediction_by_master()
 
     #######################################################
