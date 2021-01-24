@@ -9,24 +9,30 @@ max_byte_to_receive=1024
 def on_new_client(clientsocket,addr):
     print  ('Got connection from', addr )
     intro_msg = clientsocket.recv(max_byte_to_receive)
-    details= intro_msg.decode().split(":")
-
-    if details[0] == "publisher":
+    details= intro_msg.decode().split(":")   # details=["publisher", "test"]  # test is topic here
+    print("details are ", details)
+    if details[0] == "publisher":  # connected client is publisher 
         # publisher client
-    if details[1] == "subscriber":
+        print("it is a publisher")
+        while True:
+            msg = clientsocket.recv(max_byte_to_receive).decode().split(":")  # msg=[topicname, topic_msg]
+            
+            if len(msg[1]) !=0 : # topic message 
+                print("msg")
+
+    if details[0] == "subscriber":   #  connected client is subscriber
+        print("it is a subscriber")
         # subscriber client here
-
-
-    while True:
-        msg="hi client your address is " + str(addr)
-        time.sleep(1)
-        print(msg)
-        clientsocket.sendall(msg.encode())
-        msg=''
-        #msg = clientsocket.recv(max_byte_to_receive)
-        if len(msg) !=0 :
-            #do some checks and if msg == someWeirdSignal: break:
-            print (addr, ' >> ', msg)    
+        while True:
+            msg="hi client your address is " + str(addr)
+            time.sleep(1)
+            print(msg)
+            clientsocket.sendall(msg.encode())
+            msg=''
+            #msg = clientsocket.recv(max_byte_to_receive)
+            if len(msg) !=0 :
+                #do some checks and if msg == someWeirdSignal: break:
+                print (addr, ' >> ', msg)    
         
     clientsocket.close()
 

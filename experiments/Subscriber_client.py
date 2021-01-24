@@ -3,7 +3,7 @@ import socket
 import threading
 
 class Subscriber:
-    def __init__(self,topic_name,host=socket.gethostname(),port=5000, max_byte_to_receive= 1024):
+    def __init__(self,topic_name,host=socket.gethostname(),port=5005, max_byte_to_receive= 1024):
         host=host   # host = 127.0.0.1
         port= port   
 
@@ -13,7 +13,7 @@ class Subscriber:
 
         self.subscriber_client = socket.socket()  # instantiate socket client
         self.subscriber_client.connect((host, port))  # connect to server
-        self.subscriber_client.send("subscriber:" + str(self.topic) )  # inform server that this is a subscriber
+        self.subscriber_client.send(("subscriber:" + str(self.topic) ).encode())  # inform server that this is a subscriber
 
     def subscribe(self):
         t=threading.Thread(target= self.receive) # running recieving function in thread to receive data from server

@@ -3,7 +3,7 @@ import socket
 import threading
 
 class Publisher:
-    def __init__(self,topic_name,host=socket.gethostname(),port=5001):
+    def __init__(self,topic_name,host=socket.gethostname(),port=5005):
         host=host   # host = 127.0.0.1
         port= port
         self.topic = topic_name  
