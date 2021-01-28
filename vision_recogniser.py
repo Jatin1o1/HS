@@ -28,11 +28,14 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.mixture import GaussianMixture
 import numpy as np
 
-cascPath = "/home/devendra/Desktop/haarcascade_frontalface_default.xml"
-base = "/home/devendra/Desktop/jump/"
+cascPath = "haarcascade_frontalface_default.xml"
+base = "jump/"
 rtb = None
 device_IDs = 10
-training_img_size = 64
+#training_img_size = 64
+
+#training_img_size = 128
+training_img_size = 256
 
 
 def convert_real(ls):
