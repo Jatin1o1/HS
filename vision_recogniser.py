@@ -12,7 +12,7 @@ import os
 import random
 from glob import glob
 from statistics import mode
-
+from tqdm import tqdm
 import cv2
 import pandas as pd
 import joblib
@@ -80,7 +80,7 @@ def covNcorr(Mat):
     CorrMat = np.zeros([c, c]).astype(np.float)
 
     # Calculating covariance and correlation of data matrix 'Mat'
-    for i in range(c):
+    for i in tqdm(range(c), desc ="Analysing"):
 
         for j in range(c):
             # Covariance
