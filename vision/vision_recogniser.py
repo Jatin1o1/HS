@@ -1,9 +1,9 @@
 ######################################################
-# Before running this create a directory structure or 
+# Before running this create a directory structure or
 # edit the base variable to point to newely created 'jump' directory
 # there should be two sub-directories in the 'jump' directory
 # 1) data 2) models     <---- mind the case, its sensitive. ;)
-# Please report all the bugs to jumplabs. the codes are 
+# Please report all the bugs to jumplabs. the codes are
 # written exclusively for jumplabs.
 ######################################################
 
@@ -32,10 +32,10 @@ cascPath = "haarcascade_frontalface_default.xml"
 base = "jump/"
 rtb = None
 device_IDs = 10
-#training_img_size = 64
+training_img_size = 64
 
 #training_img_size = 128
-training_img_size = 256
+#training_img_size = 256
 
 
 def convert_real(ls):
@@ -73,21 +73,24 @@ def covNcorr(Mat):
     for i in range(c):
         # This operation is only valid if the matrix is mean centralised.
         # Its valid in this case as the mean centralisation has been done in previous step.
-        Colstd[i] = 1 / (r - 1) * np.sqrt(np.dot(np.transpose(Mat[:, i]), Mat[:, i]))
+        Colstd[i] = 1 / (r - 1) * \
+            np.sqrt(np.dot(np.transpose(Mat[:, i]), Mat[:, i]))
 
     # Containers/Variables to hold covariance and correlation of Mat
     CovMat = np.zeros([c, c]).astype(np.float)
     CorrMat = np.zeros([c, c]).astype(np.float)
 
     # Calculating covariance and correlation of data matrix 'Mat'
-    for i in tqdm(range(c), desc ="Analysing"):
+    for i in tqdm(range(c), desc="Analysing"):
 
         for j in range(c):
             # Covariance
-            CovMat[i][j] = 1 / (r - 1) * np.dot(np.transpose(Mat[:, i]), Mat[:, j])
+            CovMat[i][j] = 1 / (r - 1) * \
+                np.dot(np.transpose(Mat[:, i]), Mat[:, j])
 
             # Correlation
-            CorrMat[i][j] = 1 / (r - 1) * np.dot(np.transpose(Mat[:, i]), Mat[:, j]) / (Colstd[i] * Colstd[j])
+            CorrMat[i][j] = 1 / (r - 1) * np.dot(np.transpose(Mat[:, i]),
+                                                 Mat[:, j]) / (Colstd[i] * Colstd[j])
 
     return CovMat, CorrMat
 
@@ -143,7 +146,8 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
             print("Adding Component No.", i + 1)
 
         if i != 0:
-            Transform_matrix = np.append(Transform_matrix, np.transpose(eigenvectors_sorted[i]))
+            Transform_matrix = np.append(
+                Transform_matrix, np.transpose(eigenvectors_sorted[i]))
 
         i = i + 1
 
@@ -160,7 +164,8 @@ def PrincipalComponentAnalysis(Mat, IP=90, PCA_vectors=0, print_msg=False):
             if i >= PCA_vectors or IP_calc == 100:
                 flag = 0
 
-    Ready_Transform_basis = np.transpose(Transform_matrix.reshape(i, eigenvectors_sorted[0].shape[0])).copy()
+    Ready_Transform_basis = np.transpose(
+        Transform_matrix.reshape(i, eigenvectors_sorted[0].shape[0])).copy()
 
     if print_msg:
         print("+++++++++++++++++++++++++++++++Transform_basis+++++++++++++++++++++++++")
@@ -198,7 +203,8 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
 
     for i in range(device_IDs):
 
-        video_capture = cv2.VideoCapture(i)
+        #video_capture = cv2.VideoCapture(i)  # laptop vid cam
+        video_capture = cv2.VideoCapture('rtsp://admin:admin@192.168.1.152:554')  # cp plus camera
 
         if video_capture.isOpened():
 
@@ -238,7 +244,8 @@ def getNewClass(name="Anonymous", gender="No Mention", age=0, relation_with_fami
             record = gray[y:y + h, x:x + w]
             cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 255, 100), 1)
             cv2.imwrite(folder + "/" + "img" + str(count) + ".jpg", record)
-            image_index_file_handle.write(folder + "/" + "img" + str(count) + ".jpg\n")
+            image_index_file_handle.write(
+                folder + "/" + "img" + str(count) + ".jpg\n")
 
         cv2.imshow('Video', frame)
 
@@ -271,7 +278,8 @@ def training_data_prep():
 
         except Exception as e:
 
-            print("[X] Problem in opening the index.jump for ", _class, "---> Exception:", e)
+            print("[X] Problem in opening the index.jump for ",
+                  _class, "---> Exception:", e)
 
         while True:
 
@@ -297,7 +305,8 @@ def training_data_prep():
 
             except Exception as e:
 
-                print("[X] Image is not read for address ", address, "---> Exception:", e)
+                print("[X] Image is not read for address ",
+                      address, "---> Exception:", e)
 
         records_access_handle.close()
         label_id += 1
@@ -312,7 +321,9 @@ def prediction_from_stream():
     faceCascade = cv2.CascadeClassifier(cascPath)
     model = cv2.face.createEigenFaceRecognizer()
     model.load(path)
-    cam = cv2.VideoCapture(1)
+    #cam = cv2.VideoCapture(1)  # laptop camera
+    cam = cv2.VideoCapture('rtsp://admin:admin@192.168.1.152:554')  # cp plus camera
+
 
     while True:
 
@@ -331,8 +342,10 @@ def prediction_from_stream():
             img = cv2.resize(record, (256, 256))
             pre_labels, accuracy = model.predict(img)
             # pre_address = [labels_dictionary[pre_labels]]
-            print("Accuracy: ", 100 - accuracy, "Label: ", model.getLabelInfo(pre_labels))
-            cv2.rectangle(img1, (x - 5, y - 5), (x + w + 5, y + h + 5), (50, 255, 100), 1)
+            print("Accuracy: ", 100 - accuracy, "Label: ",
+                  model.getLabelInfo(pre_labels))
+            cv2.rectangle(img1, (x - 5, y - 5),
+                          (x + w + 5, y + h + 5), (50, 255, 100), 1)
             cv2.putText(img1, model.getLabelInfo(pre_labels), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 0, 255), 1,
                         cv2.LINE_AA)
         # except:
@@ -358,7 +371,8 @@ def models_prep():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
     n_components = 80
-    rtb, pd, ir = PrincipalComponentAnalysis(X_train, PCA_vectors=n_components, print_msg=True)
+    rtb, pd, ir = PrincipalComponentAnalysis(
+        X_train, PCA_vectors=n_components, print_msg=True)
     X_train_pca = pd
 
     with open(base + "models/rtb.jump", 'wb') as fp:
@@ -372,14 +386,16 @@ def models_prep():
     X_test_pca = np.dot(X_test, rtb)
 
     ##
-    ## Multilayered Perceptron training:
+    # Multilayered Perceptron training:
     ##
     try:
 
-        clf = MLPClassifier(hidden_layer_sizes=(1024,), batch_size=256, verbose=True, early_stopping=True)
+        clf = MLPClassifier(hidden_layer_sizes=(
+            1024,), batch_size=256, verbose=True, early_stopping=True)
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/MLPClassifier.sav")
 
@@ -388,29 +404,32 @@ def models_prep():
         print("Multilayer perceptron training error reported: [x]error-->", e)
 
     ##
-    ## Support vector classifier
+    # Support vector classifier
     ##
     try:
 
         clf = SVC()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/SVClassfier.sav")
 
     except Exception as e:
 
-        print("Support vector classifier training error reported: [x]error-->", e)
+        print(
+            "Support vector classifier training error reported: [x]error-->", e)
     ##
-    ## RandomForestClassifier
+    # RandomForestClassifier
     ##
     try:
 
         clf = RandomForestClassifier()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/RandomForestClassifier.sav")
 
@@ -419,30 +438,33 @@ def models_prep():
         print("RandomForestClassifier training error reported: [x]error-->", e)
 
     ##
-    ## GradientBoostingClassifier
+    # GradientBoostingClassifier
     ##
     try:
 
         clf = GradientBoostingClassifier()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/GradientBoostingClassifier.sav")
 
     except Exception as e:
 
-        print("GradientBoostingClassifier training error reported: [x]error-->", e)
+        print(
+            "GradientBoostingClassifier training error reported: [x]error-->", e)
 
     ##
-    ## KNeighborsClassifier
+    # KNeighborsClassifier
     ##
     try:
 
         clf = KNeighborsClassifier()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/KNeighborsClassifier.sav")
 
@@ -451,14 +473,15 @@ def models_prep():
         print("KNeighborsClassifier training error reported: [x]error-->", e)
 
     ##
-    ## GaussianNB
+    # GaussianNB
     ##
     try:
 
         clf = GaussianNB()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/GaussianNB.sav")
 
@@ -467,14 +490,15 @@ def models_prep():
         print("GaussianNB training error reported: [x]error-->", e)
 
     ##
-    ## GaussianMixture
+    # GaussianMixture
     ##
     try:
 
         clf = GaussianMixture()
         clf.fit(X_train_pca, y_train)
         y_pred = clf.predict(X_test_pca)
-        print(classification_report(y_test, y_pred, target_names=labels_dictionary.values()))
+        print(classification_report(y_test, y_pred,
+                                    target_names=labels_dictionary.values()))
 
         joblib.dump(clf, base + "models/GaussianMixture.sav")
 
@@ -512,10 +536,12 @@ def prediction_by_master():
 
     # getting stream source
     cam = None
-    
+
     for i in range(device_IDs):
 
-        cam = cv2.VideoCapture(i)
+        #cam = cv2.VideoCapture(i)   # laptop camera
+        cam = cv2.VideoCapture('rtsp://admin:admin@192.168.1.152:554')  # cp plus camera
+
 
         if cam.isOpened():
 
@@ -552,7 +578,7 @@ def prediction_by_master():
         )
 
         for (x, y, w, h) in faces:
-            
+
             record = img[y:y + h, x:x + w]
             cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 255, 100), 1)
             record = cv2.resize(record, (training_img_size, training_img_size))
@@ -564,33 +590,34 @@ def prediction_by_master():
             record = np.resize(record, (1, record.shape[0]*record.shape[1]))
             record = np.dot(record, rtb)
             predictions_by_childs = list()
-            
+
             for model, i in zip(model_list, range(len(model_list))):
-                
+
                 predicted_label = model.predict(record)
                 print("Model number -> ", i, "Predicted: label", predicted_label)
                 predictions_by_childs.append(predicted_label[0])
-                
+
             try:
-                
-                predicted_label_final = labels_dictionary[mode(predictions_by_childs)]
+
+                predicted_label_final = labels_dictionary[mode(
+                    predictions_by_childs)]
                 print(predicted_label_final)
                 cv2.putText(frame, predicted_label_final, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 0, 255), 1,
-                                cv2.LINE_AA)
-                
+                            cv2.LINE_AA)
+
             except Exception as e:
-                
+
                 print(e)
 
         cv2.imshow("Prediction Feed", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            
+
             break
 
 
 def data_reader(address):
-    
+
     pass
 
 
