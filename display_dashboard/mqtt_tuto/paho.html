@@ -1,0 +1,112 @@
+<html>
+    
+    <head>
+        <title>paho_mqtt exsmple</title>
+        <script src="paho.js" type="text/javascript"> </script>
+        <script>  // mqtt functions
+            var mqtt_client;
+            var reconnectTimeout=2600;
+            var host="192.168.43.101";
+            //var host="localhost";
+            var port= 5000;
+            
+            // *****************  MQTT Fucntions ****************** //
+
+
+            // Call to connect to server
+            function MQTTconnect(){
+                console.log("connecting to "+ host +" " + port ); // creating a client object
+                mqtt_client= new Paho.MQTT.Client(host, port,"web client");    
+                
+                // Set callback handlers
+                mqtt_client.onConnectionLost = onConnectionLost;
+                mqtt_client.onMessageArrived = onMessageArrived;
+                
+                // Connect the client, if successful, call onConnect function
+                mqtt_client.connect({  onSuccess: onConnect,   });
+
+            }
+
+            // Called when the client connects
+            function onConnect(){  // once connected, make a subscription and send message
+                console.log("connected to server");
+                
+                message = new Paho.MQTT.Message("hello world");
+                message.destinationName="sensor1";  // publishing topic name
+                mqtt_client.send(message);  // publish message
+
+                // Subscribe to the topic= test
+                var subs_topic = "test";
+                mqtt_client.subscribe(subs_topic);
+                mqtt_client.subscribe("sensor_msg");
+                console.log("mqtt client subscribing to topic : " + subs_topic);
+            }
+
+            // Called when the client loses its connection
+            function onConnectionLost(responseObject) {
+                console.log("connection lost |  "+"errorCode = "+ responseObject.errorCode +"  |  errorMessage : " + responseObject.errorMessage  );
+            }
+
+            // Called when a message arrives
+            function onMessageArrived(message) {
+                if (message.destinationName == "sensor_msg"){
+                document.getElementById("sensor_msg").innerHTML= message.payloadString;
+                }
+                else{
+                    console.log("message received  | "+ "topic : "+ message.destinationName + ' | message : ' + message.payloadString);
+                    }
+            }
+            function publish(topic_name, topic_message){
+                if (! (topic_name === undefined ) ) {   // if topic name is defined
+                    message =  new Paho.MQTT.Message(topic_message);
+                    message.destinationName = topic_name;
+                    mqtt_client.send(message);  }
+                else{ 
+                    console.log("you havent entered the topic name to publish to");   }
+            }
+
+            // *****************  MQTT Fucntions Ends here ****************** //
+
+            // speech function 
+            function speech(phrase) {
+                //let msg = document.getElementById("text-to-speech").value;
+                let msg = phrase;
+                let speech = new SpeechSynthesisUtterance();
+                speech.lang = "en-US";
+                
+                speech.text = msg;
+                speech.volume = 1;
+                speech.rate = 0.75;
+                speech.pitch = 1;
+                
+                window.speechSynthesis.speak(speech);
+                console.log("speaking");
+            }
+            
+            
+            function jatin(){
+                //document.getElementById("jat").innerHTML="button is pressed";
+                publish("test", "jatin");
+                speech("turning light on");
+            }
+
+        </script>
+
+    </head>
+    
+    <body>
+        <p id="para1"> hi this is a para</p>
+        <button id= "button1" onclick="jatin()"> button1</button>
+        <div id="jat">message on sensor topic is </div>
+	    <div  id="sensor_msg"> "" </div>
+        <button id= "button" onclick="publish('test', 'jatin'); speech('publishing jatin');"> button</button>
+        <button id= "button" onclick="publish('test', 'jatin1');speech('publishing jatin1');"> jatin1</button>
+        <button id= "button" onclick="publish('test', 'jatin2');speech('publishing jatin2');"> jatin2</button>
+        <button id= "button" onclick="publish('test', 'jatin3');speech('publishing jatin3');"> jatin3</button>
+        <script>
+            MQTTconnect();
+        </script>
+    </body>
+
+
+</html>

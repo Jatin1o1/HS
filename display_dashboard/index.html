@@ -1,0 +1,318 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>HOme Automation UI</title>
+		
+		<link href="style.css" rel="stylesheet">
+		<!-- Nucleo Icons --><link href="nucleo-icons.css" rel="stylesheet">
+		
+		<script src="paho.js" type="text/javascript"> </script>
+		
+		<script> //UI scripts
+			function button_fx(id,displayname,switch_no, pub_topic){
+				//document.getElementById("jat").innerHTML="you pressed " + displayname;
+				var currentc=document.getElementById(id).style.background;
+
+				if (currentc=="yellow") {
+					document.getElementById(id).style.background="transparent";
+					document.getElementById(id).style.color="white";
+					publish(pub_topic, switch_no+':0'); 
+					speech('turning off ' + displayname );
+				}	
+				else{
+					document.getElementById(id).style.background="yellow";
+					document.getElementById(id).style.color="black";
+					publish(pub_topic, switch_no+':1'); 
+					speech('turning on ' + displayname );
+				}
+			}
+
+			function overlay_on() {
+				document.getElementById("main_overlay").style.display = "block";
+				console.log("got message on overlay topic ");
+				
+			}
+
+			function overlay_off() {
+				document.getElementById("main_overlay").style.display = "none";
+			}
+
+		</script>
+
+		<script>  // mqtt functions
+			var mqtt_client;
+			var reconnectTimeout=2600;
+			var host="192.168.43.101";
+			//var host="localhost";
+			var port= 5000;
+			
+			// *****************  MQTT Fucntions ****************** //
+
+
+			// Call to connect to server
+			function MQTTconnect(){
+				console.log("connecting to "+ host +" " + port ); // creating a client object
+				mqtt_client= new Paho.MQTT.Client(host, port,"web client");    
+				
+				// Set callback handlers
+				mqtt_client.onConnectionLost = onConnectionLost;
+				mqtt_client.onMessageArrived = onMessageArrived;
+				
+				// Connect the client, if successful, call onConnect function
+				mqtt_client.connect({  onSuccess: onConnect,   });
+
+			}
+
+			// Called when the client connects
+			function onConnect(){  // once connected, make a subscription and send message
+				console.log("connected to server");
+				
+				message = new Paho.MQTT.Message("hello world");
+				message.destinationName="sensor1";  // publishing topic name
+				mqtt_client.send(message);  // publish message
+
+				// list of topics to subscribe 
+				var subs_topic_list= ["test","sensor1","sensor2","sensor3","sensor4","overlay"]
+				for (let i of subs_topic_list ){	// loop over array objects
+					mqtt_client.subscribe(i);		// subscriber function called
+					console.log("mqtt client subscribing to topic : " + i);	
+				}
+
+			}
+
+			// Called when the client loses its connection
+			function onConnectionLost(responseObject) {
+				console.log("connection lost |  "+"errorCode = "+ responseObject.errorCode +"  |  errorMessage : " + responseObject.errorMessage  );
+			}
+
+			// Called when a message arrives
+			function onMessageArrived(message) {
+				console.log("got message on  topic " + message.destinationName + "  " + message.payloadString);
+				if (message.destinationName == "sensor_msg"){
+					document.getElementById("sensor_msg").innerHTML= message.payloadString;
+				}
+				else if	(message.destinationName == "overlay") {
+					console.log("got message on overlay topic ");
+					overlay_on();
+				}
+				else{
+				console.log("message received  | "+ "topic : "+ message.destinationName + ' | message : ' + message.payloadString);
+				}
+			}
+			
+			function publish(topic_name, topic_message){
+				if (! (topic_name === undefined ) ) {   // if topic name is defined
+					message =  new Paho.MQTT.Message(topic_message);
+					message.destinationName = topic_name;
+					mqtt_client.send(message);  }
+				else{ 
+					console.log("you havent entered the topic name to publish to");   }
+			}
+
+			// *****************  MQTT Fucntions Ends here ****************** //
+		
+		</script>
+
+		<script> // speech function 
+			
+			function speech(phrase) {
+				//let msg = document.getElementById("text-to-speech").value;
+				let msg = phrase;
+				let speech = new SpeechSynthesisUtterance();
+				speech.lang = "en-US";
+				
+				speech.text = msg;
+				speech.volume = 1;
+				speech.rate = 0.75;
+				speech.pitch = 1;
+				
+				window.speechSynthesis.speak(speech);
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="header">
+			<div class="coll-1">
+				<h1>Dashboard	</h1>		
+			</div>
+		</div>
+
+		<div class="menu">
+			<h5>Hi User </h5>
+			
+				<li class="col-1">
+					<a href="#" data-nav-section = "ROOMS" style="color: white;">ROOMS</a>
+				</li>
+				<li class="col-1">
+					<a href="#" data-nav-section = "CAMERAS" style="color: white;">CAMERAS</a>
+				</li>
+				<li class="col-1">
+					<a href="#" data-nav-section = "DEVICES" style="color: white;">DEVICES</a>
+				</li>
+				<li class="col-1">
+					<a href="#" data-nav-section = "LOCKS" style="color: white;">LOCKS</a>
+				</li>
+				<li class="col-1">
+					<a href="#" data-nav-section = "SETTINGS" style="color: white;">SETTINGS</a>
+				</li>
+				    
+		</div>
+		
+		<div > <!-- main display -->
+			<div id="main_overlay" class="overlay" onclick="overlay_off()">
+				<div class="overlay_display_text">Overlay Text</div>
+				
+				<video width="100%" height="100%" controls="false" style="outline: none;" >
+						<source src="123.mp4" type="video/mp4" />
+				</video> 
+			</div>
+
+			<section class= "main" data-section="ROOMS">
+			
+				<h1 id="jat" style="padding-left: 15px;">ROOM 1 </h1>
+				<div class= "left_section">
+					<div class= "row">
+						
+						<button id="Bulb" class="box" onclick="button_fx('Bulb','Bulb',1,'switch');"> 
+							<i class="tim-icons icon-bulb-63"></i><p>Bulb</p>
+						</button>
+						
+						<button id="Light1" class="box" onclick="button_fx('Light1','Light1',2,'switch');">
+							<i class="tim-icons icon-light-3"></i><p> Lights 1 </p>
+						</button>
+
+						<button id="light2" class="box" onclick="button_fx('light2','Light2',3,'switch');">
+							<i class="tim-icons icon-light-3"></i><p> Lights 2 </p>
+						</button>
+
+						
+						<button id="nightbulb" class="box" onclick="button_fx('nightbulb','Night Bulb',4,'switch');"> 
+							<i class="tim-icons icon-bulb-63"></i><p>Night Bulb</p>
+						</button>
+						
+					</div>
+
+					<div class="row">
+						<button id="bulb2" class="box" onclick="button_fx('bulb2','Bulb',5,'switch');"> 
+							<i class="tim-icons icon-bulb-63"></i><p>Bulb</p>
+						</button>
+						
+
+						<button  class="box" onclick="">
+							<i class="tim-icons icon-app"></i>
+							<p>Cube</p>
+						</button>
+					</div>
+
+				</div>
+				
+
+				<div class= "right_section">
+					
+
+					<div class="row special">
+						<div  class="box" style="width:75%"> 
+							<p style=" padding-top: 2%; font-size: 28; color:#d0bdbd" > 27 </p>
+							<p style=" font-size: 28;"> Temperature </p>
+						</div>
+					
+						<div  class="box" style="width:75%"> 
+							<p style=" padding-top: 2%; font-size: 28; color:#d0bdbd"" > 50 </p>
+							<p style=" font-size: 28;"> Humidity </p>
+						</div>
+					</div>
+
+
+					<!--div class="row">
+						<button  class="box" onclick=""> sensor 3</button>
+						<button  class="box" onclick=""> sensor 4</button>
+					</div -->
+						
+				</div>
+		
+			</section>
+		
+			<section class= "main" data-section="CAMERAS">
+				
+				
+					<h2 style="padding-left:20px" padding-bottom:0px;> Cameras</h2>
+					<div class="cams" style="float: left; outline: none;">
+						<img style="width=100%" height="100%"" src=""> 
+						<!-- <img style="width=100%" height="100%"" src="http://0.0.0.0:5004/video_feed"> -->
+						
+						
+					</div>
+					<div class="cams" style="float: right;">
+						<video width="100%" height="100%" controls="false" style="outline: none;" >
+						<!-- <video width="100%" height="100%" controls="false" style="outline: none;" autoplay="autoplay"> -->
+							<source src="123.mp4" type="video/mp4" />
+						</video> 
+					</div>
+					<div class="cams" style="float: left;">
+						<video width="100%" height="100%" controls="false" style="outline: none;" >
+							<source src="123.mp4" type="video/mp4" />
+						</video> 
+					</div>
+					<div class="cams" style="float: right;">
+						<video width="100%" height="100%" controls="false" style="outline: none;" >
+							<source src="123.mp4" type="video/mp4" />
+						</video> 
+					</div>
+				
+			</section>
+
+			<section class= "main" data-section="DEVICES">
+					<p> Hi this is extra1 section</p>
+			</section>
+
+			<section class= "main" data-section="LOCKS">
+				
+					
+					<h1 id="jat" style="padding-left: 15px;"> LOCKS </h1>
+
+					<div class= "left_section">
+						<div class= "row">
+
+							<button id="main_lock" class="box" onclick="button_fx('main_lock','Main Lock',1,'lock');">
+								<i class="tim-icons icon-lock-circle"></i><p>Main Lock</p>
+							</button>
+
+							<button id="second_lock"  class="box" onclick="button_fx('second_lock','Lock',2,'lock');">
+								<i class="tim-icons icon-key-25" ></i>	<p>LOCK</p>
+							</button>
+
+						</div>
+				
+			</section>
+				
+			<section class= "main" data-section="SETTINGS">
+			
+					<h1 id="jat" style="padding-left: 15px;"> SETTINGS </h1>
+
+					<div class= "left_section">
+						<div class= "row">
+							<button  class="box" onclick="publish('test', 'jatin'); speech('publishing jatin on topic test');">
+								<i class="tim-icons icon-settings"></i>
+								<p>Settings</p>
+							</button>
+							<button  class="box" onclick="publish('test', 'jatin'); speech('publishing jatin on topic test');">
+								<i class="tim-icons icon-button-power"></i>
+								<p>Power </p>
+							</button>
+							<button  class="box" onclick="publish('test', 'jatin'); speech('publishing jatin on topic test');">
+								<i class="tim-icons icon-alert-circle-exc"></i>
+								<p>Alert</p>
+							</button>
+						
+						
+						</div>
+					</div>
+				
+			</section>
+		</div>
+		<script>
+            MQTTconnect();
+        </script>
+	</body>
+</html>
