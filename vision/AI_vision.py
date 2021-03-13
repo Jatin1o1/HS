@@ -151,8 +151,8 @@ class AI_cam:
 if __name__ == "__main__":
 
     res = 'y'
-    res3 = input("Want predictions? [y/n]: ")
-    if res3 == 'y':
+    res1 = input("Want predictions? [y/n]: ")
+    if res1 == 'y':
         
         j=AI_cam()
         j.start_detection()

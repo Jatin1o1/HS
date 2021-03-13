@@ -28,9 +28,7 @@ async def time(websocket, path):
                 #sender(man)
                 await websocket.send(man.tobytes())
                 
-        except :
-
-            
+        except :            
             pass
                 
 start_server = websockets.serve(time, "127.0.0.1", 9997)    

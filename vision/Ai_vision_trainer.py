@@ -32,7 +32,7 @@ cascPath = "haarcascade_frontalface_default.xml"
 base = "jump/"
 rtb = None
 device_IDs = 10
-training_img_size = 64
+training_img_size = 128
 
 #training_camera_url= 'rtsp://admin:admin@192.168.1.152:554'   # current training with camera  at ip address 
 training_camera_url=""
