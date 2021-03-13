@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SockStream Demo</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <img id="video" src="" />
+
+  <script type="text/javascript">
+    var urlCreator = window.URL || window.webkitURL;
+    var video = document.getElementById('video');
+    var socket = new WebSocket('ws://localhost:9999');
+//    socket.binaryType = 'arraybuffer';
+
+    socket.onmessage = function(event) {
+      console.log("got data");
+      var arrayBufferView = new Uint8Array(event.data);
+      var blob = new Blob([arrayBufferView], {type: "image/jpeg"});
+      var imageUrl = urlCreator.createObjectURL(blob);
+      video.src = imageUrl;
+    }
+
+    socket.onopen = function(event) {
+      console.log(event.currentTarget.url);
+      console.log("connected to url")
+    }
+
+    socket.onclose = function(event) {
+      console.log(event);
+      console.log("closed connection");
+    }
+
+    socket.onerror = function(error) {
+      console.log(error);
+      console.log("error occured");
+    }
+  </script>
+</body>
+</html>
