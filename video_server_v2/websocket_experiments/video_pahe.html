@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>SockStream Demo</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SockStream Demo</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-    #video {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
+      #video {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
 <body>
   <img id="video" src="" />
-
   <script type="text/javascript">
     var urlCreator = window.URL || window.webkitURL;
     var video = document.getElementById('video');
-    var socket = new WebSocket('ws://localhost:9999');
-//    socket.binaryType = 'arraybuffer';
+    var socket = new WebSocket('ws://localhost:9997');
+    // socket.binaryType = 'arraybuffer';
 
     socket.onmessage = function(event) {
       console.log("got data");
@@ -51,4 +51,5 @@
     }
   </script>
 </body>
+
 </html>

@@ -1,20 +1,17 @@
 #!/usr/bin/env python
-
 # WS server example that synchronizes state across clients
-
 import asyncio
 import json
 import logging
 import websockets
-
+import cv2
 logging.basicConfig()
 
 STATE = {"value": 0}
-
 USERS = set()
 global frame
 
-def camera():
+async def camera():
     global frame
     camera=True
     if camera == True:
@@ -27,7 +24,8 @@ def camera():
             frame = cv2.resize(frame, (640, 480))
             encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 65]
             frame = cv2.imencode('.jpg', frame, encode_param)[1]
-            return frame
+            await websocket.send(frame)
+            #return frame
     except:
         pass
 
@@ -50,18 +48,19 @@ async def unregister(websocket):
     USERS.remove(websocket)
     await notify_users()
 
-
 async def counter(websocket, path):
+    global frame
     # register(websocket) sends user_event() to websocket
     await register(websocket)
     try:
-        await websocket.send("hi")
+        await camera()
+        #await websocket.send("hi")
+        #await websocket.send(frame)
         
     finally:
         await unregister(websocket)
 
 
-start_server = websockets.serve(counter, "localhost", 6789)
-
+start_server = websockets.serve(counter, "localhost", 9997)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
