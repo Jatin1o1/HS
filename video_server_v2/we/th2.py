@@ -38,7 +38,7 @@ async def time(websocket, path):
     global frame
     t = threading.Thread(target=thread_cam, args=(websocket, path,))
     t.start()
-    await websocket.send(frame.tobytes())
+    #await websocket.send(frame.tobytes())
 
 
 start_server = websockets.serve(time, "127.0.0.1", 9997)
