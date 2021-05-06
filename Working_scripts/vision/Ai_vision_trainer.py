@@ -322,9 +322,11 @@ def training_data_prep():
 def models_prep():
     imgs, labels, labels_dictionary = training_data_prep()
 
-    with open(base + "models/labels_dictionary.jump", 'wb') as fp:
+    with open(base + "jump/models/labels_dictionary.jump", 'wb') as fp:
 
         pickle.dump(labels_dictionary, fp)
+
+
 
     print("Input imges: ", len(imgs))
     print("lebels of imges: ", len(labels))

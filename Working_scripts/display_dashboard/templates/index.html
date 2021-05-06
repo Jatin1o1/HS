@@ -3,9 +3,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>HOme Automation UI</title>
 		
-		<link href="style.css" rel="stylesheet">
-		<!-- Nucleo Icons --><link href="nucleo-icons.css" rel="stylesheet">
+		<!-- link  rel="stylesheet" href="style.css" -->
+		<link  rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" >
 		
+		<link  rel="stylesheet" href="nucleo-icons.css">
+			
 		<script src="paho.js" type="text/javascript"> </script>
 		
 		<script> //UI scripts
@@ -42,9 +44,9 @@
 		<script>  // mqtt functions
 			var mqtt_client;
 			var reconnectTimeout=2600;
-			var host="192.168.43.101";
+			var host="192.168.43.203";
 			//var host="localhost";
-			var port= 5000;
+			var port= 5001;
 			
 			// *****************  MQTT Fucntions ****************** //
 
@@ -132,12 +134,15 @@
 	</head>
 
 	<body>
+
+		<!-- main header -->
 		<div class="header">
 			<div class="coll-1">
 				<h1>Dashboard	</h1>		
 			</div>
 		</div>
 
+		<!-- navigation menu -->
 		<div class="menu">
 			<h5>Hi User </h5>
 			
@@ -160,12 +165,10 @@
 		</div>
 		
 		<div > <!-- main display -->
+			
 			<div id="main_overlay" class="overlay" onclick="overlay_off()">
 				<div class="overlay_display_text">Overlay Text</div>
-				
-				<video width="100%" height="100%" controls="false" style="outline: none;" >
-						<source src="123.mp4" type="video/mp4" />
-				</video> 
+				<img src="{{ url_for('video_feed') }}" width="100%">
 			</div>
 
 			<section class= "main" data-section="ROOMS">
@@ -199,7 +202,7 @@
 						</button>
 						
 
-						<button  class="box" onclick="">
+						<button  class="box" onclick="overlay_on();">
 							<i class="tim-icons icon-app"></i>
 							<p>Cube</p>
 						</button>
@@ -235,30 +238,32 @@
 		
 			<section class= "main" data-section="CAMERAS">
 				
-				
 					<h2 style="padding-left:20px" padding-bottom:0px;> Cameras</h2>
+					
 					<div class="cams" style="float: left; outline: none;">
-						<img style="width=100%" height="100%"" src=""> 
-						<!-- <img style="width=100%" height="100%"" src="http://0.0.0.0:5004/video_feed"> -->
-						
-						
+						<img src="{{ url_for('video_feed') }}" width="100%">
+						<!-- <img style="width=100%" height="100%"" src="http://0.0.0.0:5004/video_feed"> -->		
 					</div>
+
 					<div class="cams" style="float: right;">
-						<video width="100%" height="100%" controls="false" style="outline: none;" >
+						<img src="{{ url_for('video_feed') }}" width="100%">
+						<!--video width="100%" height="100%" controls="false" style="outline: none;"  -->
 						<!-- <video width="100%" height="100%" controls="false" style="outline: none;" autoplay="autoplay"> -->
 							<source src="123.mp4" type="video/mp4" />
 						</video> 
 					</div>
-					<div class="cams" style="float: left;">
+
+					<!-- div class="cams" style="float: left;">
 						<video width="100%" height="100%" controls="false" style="outline: none;" >
 							<source src="123.mp4" type="video/mp4" />
 						</video> 
 					</div>
+					
 					<div class="cams" style="float: right;">
 						<video width="100%" height="100%" controls="false" style="outline: none;" >
 							<source src="123.mp4" type="video/mp4" />
 						</video> 
-					</div>
+					</div -->
 				
 			</section>
 
