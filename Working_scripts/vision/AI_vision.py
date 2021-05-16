@@ -130,11 +130,12 @@ class AI_cam:
 
                 try:
 
-                    predicted_label_final = labels_dictionary[mode(
-                        predictions_by_childs)]
-                    print(predicted_label_final)
-                    cv2.putText(frame, predicted_label_final, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 0, 255), 1,
-                                cv2.LINE_AA)
+                    predicted_label_final = labels_dictionary[mode( predictions_by_childs)]
+                    
+                    print("predticion is name is ",mode( predictions_by_childs))
+                    #print("lable name is ",predicted_label_final)
+                    
+                    cv2.putText(frame, predicted_label_final, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 0, 255), 1,cv2.LINE_AA)
 
                 except Exception as e:
 

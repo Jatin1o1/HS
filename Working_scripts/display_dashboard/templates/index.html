@@ -6,9 +6,9 @@
 		<!-- link  rel="stylesheet" href="style.css" -->
 		<link  rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" >
 		
-		<link  rel="stylesheet" href="nucleo-icons.css">
+		<link  rel="stylesheet" href="{{ url_for('static', filename='css/nucleo-icons.css') }}">
 			
-		<script src="paho.js" type="text/javascript"> </script>
+		<script src="paho.js" type="{{ url_for('static', filename='js/paho.js') }}"> </script>
 		
 		<script> //UI scripts
 			function button_fx(id,displayname,switch_no, pub_topic){
@@ -44,9 +44,9 @@
 		<script>  // mqtt functions
 			var mqtt_client;
 			var reconnectTimeout=2600;
-			var host="192.168.43.203";
+			var host="192.168.43.101";
 			//var host="localhost";
-			var port= 5001;
+			var port= 9002;
 			
 			// *****************  MQTT Fucntions ****************** //
 

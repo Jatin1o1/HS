@@ -2,10 +2,11 @@
 import paho.mqtt.client as mqtt
 
 host = "127.0.0.1"
+host1 = "192.168.43.101"
 
 
 client = mqtt.Client("P1")  # create new instance
-client.connect(host)
+client.connect(host1)
 
 # function to  publish at mqtt topic Mqtt_publish(topic,message)
 def Mqtt_publish(topic,message):   # function to  publish at mqtt topic Mqtt_publish(topic,message)
